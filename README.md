@@ -84,67 +84,6 @@ Edit `config.json` in the plugin's data folder:
 }
 ```
 
----
-
-## Project Structure
-
-```
-src/main/java/com/hytaletravelers/playerlogger/
-├── PlayerLoggerPlugin.java          # Plugin entry point
-├── commands/
-│   ├── PlayerLoggerPluginCommand.java
-│   ├── ListCommand.java
-│   ├── HelpSubCommand.java
-│   ├── UISubCommand.java
-│   ├── WipeSubCommand.java
-│   └── ResetSubCommand.java
-├── config/
-│   └── PluginConfig.java
-├── data/
-│   ├── PlayerData.java
-│   └── PlayerDataManager.java
-├── listeners/
-│   └── PlayerListener.java
-├── systems/
-│   ├── DamageTrackingSystem.java
-│   ├── DeathTrackingSystem.java
-│   ├── BlockBreakTrackingSystem.java
-│   └── BlockPlaceTrackingSystem.java
-├── ui/
-│   └── PlayerLoggerDashboardUI.java
-├── update/
-│   └── UpdateChecker.java
-├── webhook/
-│   └── DiscordWebhookService.java
-└── web/
-    ├── DataPushService.java
-    └── WebServer.java
-```
-
----
-
-## Building
-
-```bash
-git clone https://github.com/HytaleTravelers/PlayerLogger.git
-cd PlayerLogger
-./gradlew build
-```
-
-Output JAR: `build/libs/`
-
-### Gradle Tasks
-
-| Task | Description |
-|------|-------------|
-| `build` | Build the plugin JAR |
-| `bumpPatch` | Increment patch version (1.0.X) |
-| `bumpMinor` | Increment minor version (1.X.0) |
-| `bumpMajor` | Increment major version (X.0.0) |
-| `release` | Bump patch and build for release |
-| `deployToServer` | Copy JAR to server/mods/ |
-
----
 
 ## API
 
