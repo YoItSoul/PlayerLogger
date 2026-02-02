@@ -1,0 +1,204 @@
+plugins {
+    id 'java'
+    id 'com.gradleup.shadow' version '8.3.0'
+}
+
+group = 'com.hytaletravelers.playerlogger'
+
+// Auto-versioning system
+def versionFile = file('version.properties')
+def versionProps = new Properties()
+if (versionFile.exists()) {
+    versionProps.load(versionFile.newReader())
+}
+def vMajor = versionProps.getProperty('major', '1') as int
+def vMinor = versionProps.getProperty('minor', '0') as int
+def vPatch = versionProps.getProperty('patch', '0') as int
+def vBuild = versionProps.getProperty('build', '0') as int
+
+// Full version for display (4 parts)
+version = "${vMajor}.${vMinor}.${vPatch}.${vBuild}"
+// Semver for Hytale manifest (3 parts only - Hytale requirement)
+ext.semver = "${vMajor}.${vMinor}.${vPatch}"
+
+repositories {
+    mavenCentral()
+    // Official Hytale Maven repository
+    maven {
+        name = 'hytale-release'
+        url = 'https://maven.hytale.com/release'
+    }
+    maven {
+        name = 'hytale-pre-release'
+        url = 'https://maven.hytale.com/pre-release'
+    }
+}
+
+dependencies {
+    // Hytale Server API from official Maven repository
+    compileOnly 'com.hypixel.hytale:Server:2026.01.24-6e2d4fc36'
+    // JSR305 annotations (@Nonnull, @Nullable)
+    compileOnly 'com.google.code.findbugs:jsr305:3.0.2'
+    implementation 'com.google.code.gson:gson:2.10.1'
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+// Generate build-info.properties with version info (reads fresh from version.properties)
+tasks.register('generateBuildInfo') {
+    def outputFile = file("${buildDir}/resources/main/build-info.properties")
+    def verFile = file('version.properties')
+    inputs.file(verFile)
+    outputs.file(outputFile)
+    doLast {
+        // Read fresh values after incrementBuild has run
+        def p = new Properties()
+        p.load(verFile.newReader())
+        def maj = p.getProperty('major', '1')
+        def min = p.getProperty('minor', '0')
+        def pat = p.getProperty('patch', '0')
+        def bld = p.getProperty('build', '0')
+        def ver = "${maj}.${min}.${pat}.${bld}"
+
+        outputFile.parentFile.mkdirs()
+        outputFile.text = "version=${ver}\nbuild=${bld}\n"
+        println "Generated build-info.properties with version ${ver}"
+    }
+}
+
+processResources.finalizedBy generateBuildInfo
+
+shadowJar {
+    archiveClassifier.set('')
+    // Exclude server classes from the final JAR
+    dependencies {
+        exclude(dependency { it.moduleGroup == 'com.hypixel' })
+    }
+}
+
+// Disable the default jar task to avoid conflicts with shadowJar
+tasks.named('jar') {
+    enabled = false
+}
+
+tasks.named('build') {
+    dependsOn shadowJar
+}
+
+// Deploy plugin JAR to server mods folder
+tasks.register('deployToServer', Copy) {
+    // Using 'from shadowJar' automatically adds task dependency and proper input tracking
+    from shadowJar
+    into 'server/mods'
+    doLast {
+        println "Deployed to server/mods/"
+    }
+}
+
+// Watch for changes and auto-rebuild (useful during development)
+tasks.register('watch') {
+    doLast {
+        println "Watching for changes... Press Ctrl+C to stop."
+        println "Run 'gradle build --continuous' for auto-rebuild on file changes."
+    }
+}
+
+// ============== Auto-Versioning Tasks ==============
+
+// Increment build number before each build
+tasks.register('incrementBuild') {
+    doLast {
+        def props = new Properties()
+        def propFile = file('version.properties')
+        props.load(propFile.newReader())
+
+        def build = (props.getProperty('build', '0') as int) + 1
+        props.setProperty('build', build.toString())
+        props.store(propFile.newWriter(), 'Auto-incremented version - DO NOT EDIT MANUALLY')
+
+        def newVersion = "${props.major}.${props.minor}.${props.patch}.${build}"
+        println "Version incremented to: ${newVersion}"
+    }
+}
+
+// Make shadowJar depend on incrementBuild, then generateBuildInfo
+shadowJar.dependsOn incrementBuild
+shadowJar.dependsOn generateBuildInfo
+tasks.named('generateBuildInfo') { mustRunAfter 'incrementBuild' }
+
+// Manual version bump tasks
+tasks.register('bumpMajor') {
+    doLast {
+        def props = new Properties()
+        def propFile = file('version.properties')
+        props.load(propFile.newReader())
+
+        props.setProperty('major', ((props.major as int) + 1).toString())
+        props.setProperty('minor', '0')
+        props.setProperty('patch', '0')
+        props.setProperty('build', '0')
+        props.store(propFile.newWriter(), 'Auto-incremented version - DO NOT EDIT MANUALLY')
+
+        println "Major version bumped to: ${props.major}.0.0.0"
+    }
+}
+
+tasks.register('bumpMinor') {
+    doLast {
+        def props = new Properties()
+        def propFile = file('version.properties')
+        props.load(propFile.newReader())
+
+        props.setProperty('minor', ((props.minor as int) + 1).toString())
+        props.setProperty('patch', '0')
+        props.setProperty('build', '0')
+        props.store(propFile.newWriter(), 'Auto-incremented version - DO NOT EDIT MANUALLY')
+
+        println "Minor version bumped to: ${props.major}.${props.minor}.0.0"
+    }
+}
+
+tasks.register('bumpPatch') {
+    doLast {
+        def props = new Properties()
+        def propFile = file('version.properties')
+        props.load(propFile.newReader())
+
+        props.setProperty('patch', ((props.patch as int) + 1).toString())
+        props.setProperty('build', '0')
+        props.store(propFile.newWriter(), 'Auto-incremented version - DO NOT EDIT MANUALLY')
+
+        println "Patch version bumped to: ${props.major}.${props.minor}.${props.patch}.0"
+    }
+}
+
+// Show current version
+tasks.register('showVersion') {
+    doLast {
+        println "Current version: ${version}"
+    }
+}
+
+// ============== Release Tasks ==============
+
+// Full release workflow: bump patch and build
+// Version checking is automatic via CurseForge API
+tasks.register('release') {
+    dependsOn 'bumpPatch', 'build'
+    doLast {
+        def props = new Properties()
+        props.load(file('version.properties').newReader())
+        def ver = "${props.getProperty('major')}.${props.getProperty('minor')}.${props.getProperty('patch')}"
+
+        println ""
+        println "============================================"
+        println "Release ${ver} ready!"
+        println "Upload build/libs/*.jar to CurseForge"
+        println "(Version check will auto-update from CurseForge)"
+        println "============================================"
+    }
+}

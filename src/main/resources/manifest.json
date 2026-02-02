@@ -1,0 +1,10 @@
+{
+  "Group": "com.hytaletravelers",
+  "Name": "PlayerLogger",
+  "Version": "1.0.0",
+  "Description": "Log every player that joins!",
+  "Authors": [{"Name": "HytaleTravelers"}],
+  "Main": "com.hytaletravelers.playerlogger.PlayerLoggerPlugin",
+  "LoadOrder": "POSTWORLD",
+  "IncludesAssetPack": true
+}

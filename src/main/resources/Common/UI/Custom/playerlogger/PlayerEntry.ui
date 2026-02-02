@@ -1,0 +1,56 @@
+$C = "../Common.ui";
+
+Button {
+    Anchor: (Height: 40, Bottom: 4);
+    LayoutMode: Left;
+    Padding: (Horizontal: 10, Vertical: 6);
+    Style: (
+        Default: (Background: #0d1520(0.8)),
+        Hovered: (Background: #1a2a3a),
+        Pressed: (Background: #0a1018)
+    );
+
+    Label #PlayerName {
+        Text: "Player";
+        FlexWeight: 1;
+        Style: (FontSize: 14, TextColor: #ffffff, VerticalAlignment: Center, RenderBold: true);
+    }
+
+    Label #Playtime {
+        Text: "0h 0m";
+        Anchor: (Width: 120);
+        Style: (FontSize: 13, TextColor: #b4c8c9, VerticalAlignment: Center, HorizontalAlignment: Center);
+    }
+
+    Group { Anchor: (Width: 8); }
+
+    Label #Kills {
+        Text: "0";
+        Anchor: (Width: 100);
+        Style: (FontSize: 13, TextColor: #ff6b6b, VerticalAlignment: Center, HorizontalAlignment: Center);
+    }
+
+    Group { Anchor: (Width: 8); }
+
+    Label #Deaths {
+        Text: "0";
+        Anchor: (Width: 100);
+        Style: (FontSize: 13, TextColor: #ffa94d, VerticalAlignment: Center, HorizontalAlignment: Center);
+    }
+
+    Group { Anchor: (Width: 8); }
+
+    Label #StatusOnline {
+        Text: "ONLINE";
+        Anchor: (Width: 100);
+        Visible: false;
+        Style: (FontSize: 12, TextColor: #2ecc71, VerticalAlignment: Center, HorizontalAlignment: Center, RenderBold: true);
+    }
+
+    Label #StatusOffline {
+        Text: "OFFLINE";
+        Anchor: (Width: 100);
+        Visible: true;
+        Style: (FontSize: 12, TextColor: #666666, VerticalAlignment: Center, HorizontalAlignment: Center);
+    }
+}

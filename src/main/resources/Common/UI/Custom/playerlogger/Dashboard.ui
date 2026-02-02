@@ -1,0 +1,167 @@
+$C = "../Common.ui";
+
+Group {
+    Anchor: (Width: 900, Height: 550);
+    Background: #141c26(0.98);
+    LayoutMode: Top;
+    Padding: (Full: 20);
+
+    Label #HeaderTitle {
+        Text: "PlayerLogger";
+        Anchor: (Height: 30);
+        Style: (FontSize: 22, TextColor: #b4c8c9, HorizontalAlignment: Center, RenderBold: true);
+    }
+
+    Label #HeaderStats {
+        Text: "Loading...";
+        Anchor: (Height: 20);
+        Style: (FontSize: 13, TextColor: #96a9be, HorizontalAlignment: Center);
+    }
+
+    Group { Anchor: (Height: 1, Top: 10, Bottom: 10); Background: #2b3542; }
+
+    Group #SortRow {
+        LayoutMode: Left;
+        Anchor: (Height: 40, Bottom: 5);
+
+        Label { Text: "Sort:"; Anchor: (Width: 45); Style: (FontSize: 13, TextColor: #6e7da1, VerticalAlignment: Center); }
+
+        $C.@SecondaryTextButton #SortPlaytime { @Text = "Playtime"; Anchor: (Width: 140, Height: 32); }
+        Group { Anchor: (Width: 6); }
+        $C.@SecondaryTextButton #SortKills { @Text = "Kills"; Anchor: (Width: 120, Height: 32); }
+        Group { Anchor: (Width: 6); }
+        $C.@SecondaryTextButton #SortDeaths { @Text = "Deaths"; Anchor: (Width: 120, Height: 32); }
+        Group { Anchor: (Width: 6); }
+        $C.@SecondaryTextButton #SortOnline { @Text = "Status"; Anchor: (Width: 120, Height: 32); }
+
+        Group { FlexWeight: 1; }
+
+        $C.@TextField #SearchInput {
+            Anchor: (Width: 220, Height: 34);
+            PlaceholderText: "Search players...";
+        }
+    }
+
+    Group #ColumnHeaders {
+        LayoutMode: Left;
+        Anchor: (Height: 24, Bottom: 5);
+        Padding: (Left: 16, Right: 28);
+
+        Label { Text: "Player"; FlexWeight: 1; Style: (FontSize: 11, TextColor: #6e7da1, VerticalAlignment: Center); }
+        Label { Text: "Playtime"; Anchor: (Width: 120); Style: (FontSize: 11, TextColor: #6e7da1, VerticalAlignment: Center, HorizontalAlignment: Center); }
+        Group { Anchor: (Width: 8); }
+        Label { Text: "Kills"; Anchor: (Width: 100); Style: (FontSize: 11, TextColor: #6e7da1, VerticalAlignment: Center, HorizontalAlignment: Center); }
+        Group { Anchor: (Width: 8); }
+        Label { Text: "Deaths"; Anchor: (Width: 100); Style: (FontSize: 11, TextColor: #6e7da1, VerticalAlignment: Center, HorizontalAlignment: Center); }
+        Group { Anchor: (Width: 8); }
+        Label { Text: "Status"; Anchor: (Width: 100); Style: (FontSize: 11, TextColor: #6e7da1, VerticalAlignment: Center, HorizontalAlignment: Center); }
+    }
+
+    Group #ListView {
+        FlexWeight: 1;
+        LayoutMode: Top;
+
+        Group #PlayerList {
+            FlexWeight: 1;
+            LayoutMode: TopScrolling;
+            ScrollbarStyle: $C.@DefaultScrollbarStyle;
+            Background: #0d1520(0.5);
+            Padding: (Full: 6);
+        }
+    }
+
+    Group #DetailView {
+        FlexWeight: 1;
+        LayoutMode: Top;
+        Visible: false;
+        Padding: (Full: 10);
+
+        Group {
+            LayoutMode: Left;
+            Anchor: (Height: 40, Bottom: 15);
+            Label #DetailUsername { Text: ""; Style: (FontSize: 22, TextColor: #ffffff, RenderBold: true, VerticalAlignment: Center); }
+            Group { Anchor: (Width: 15); }
+            Label #DetailStatusOnline { Text: "ONLINE"; Visible: false; Style: (FontSize: 14, TextColor: #2ecc71, VerticalAlignment: Center, RenderBold: true); }
+            Label #DetailStatusOffline { Text: "OFFLINE"; Visible: false; Style: (FontSize: 14, TextColor: #666666, VerticalAlignment: Center); }
+            Group { FlexWeight: 1; }
+        }
+
+        Group {
+            LayoutMode: Left;
+            Anchor: (Height: 50);
+            Group { FlexWeight: 1; LayoutMode: Top; Label { Text: "PLAYTIME"; Style: (FontSize: 11, TextColor: #6e7da1); } Label #DetailPlaytime { Text: ""; Style: (FontSize: 18, TextColor: #ffffff, RenderBold: true); } }
+            Group { FlexWeight: 1; LayoutMode: Top; Label { Text: "K/D RATIO"; Style: (FontSize: 11, TextColor: #6e7da1); } Label #DetailKDRatio { Text: ""; Style: (FontSize: 18, TextColor: #ffffff, RenderBold: true); } }
+        }
+
+        $C.@ContentSeparator { Anchor: (Top: 10, Bottom: 10); }
+
+        Group {
+            LayoutMode: Left;
+            Anchor: (Height: 50);
+            Group { FlexWeight: 1; LayoutMode: Top; Label { Text: "PVP KILLS"; Style: (FontSize: 11, TextColor: #6e7da1); } Label #DetailPvPKills { Text: ""; Style: (FontSize: 18, TextColor: #ffffff, RenderBold: true); } }
+            Group { FlexWeight: 1; LayoutMode: Top; Label { Text: "MOB KILLS"; Style: (FontSize: 11, TextColor: #6e7da1); } Label #DetailMobKills { Text: ""; Style: (FontSize: 18, TextColor: #ffffff, RenderBold: true); } }
+            Group { FlexWeight: 1; LayoutMode: Top; Label { Text: "DEATHS"; Style: (FontSize: 11, TextColor: #6e7da1); } Label #DetailDeaths { Text: ""; Style: (FontSize: 18, TextColor: #ffffff, RenderBold: true); } }
+            Group { FlexWeight: 1; LayoutMode: Top; Label { Text: "DAMAGE"; Style: (FontSize: 11, TextColor: #6e7da1); } Label #DetailDamage { Text: ""; Style: (FontSize: 18, TextColor: #ffffff, RenderBold: true); } }
+        }
+
+        $C.@ContentSeparator { Anchor: (Top: 10, Bottom: 10); }
+
+        Group {
+            LayoutMode: Left;
+            Anchor: (Height: 50);
+            Group { FlexWeight: 1; LayoutMode: Top; Label { Text: "BLOCKS BROKEN"; Style: (FontSize: 11, TextColor: #6e7da1); } Label #DetailBlocksBroken { Text: ""; Style: (FontSize: 18, TextColor: #ffffff, RenderBold: true); } }
+            Group { FlexWeight: 1; LayoutMode: Top; Label { Text: "BLOCKS PLACED"; Style: (FontSize: 11, TextColor: #6e7da1); } Label #DetailBlocksPlaced { Text: ""; Style: (FontSize: 18, TextColor: #ffffff, RenderBold: true); } }
+        }
+
+        Group { FlexWeight: 1; }
+
+        Group {
+            LayoutMode: Left;
+            Anchor: (Height: 44, Top: 10);
+
+            $C.@SecondaryTextButton #BackButton {
+                @Text = "Back";
+                Anchor: (Width: 120, Height: 40);
+            }
+        }
+    }
+
+    Group { Anchor: (Height: 1, Top: 10); Background: #2b3542; }
+
+    Group #Footer {
+        LayoutMode: Left;
+        Anchor: (Height: 24, Top: 5);
+
+        Label { Text: "Powered by"; Style: (FontSize: 11, TextColor: #6e7da1, VerticalAlignment: Center); }
+        Group { Anchor: (Width: 5); }
+        Button #CurseForgeButton {
+            Anchor: (Height: 20);
+            Padding: (Horizontal: 4);
+            Style: (
+                Default: (Background: #141c26),
+                Hovered: (Background: #1a2a3a),
+                Pressed: (Background: #0a1018)
+            );
+            Label { Text: "PlayerLogger"; Style: (FontSize: 11, TextColor: #f16436, VerticalAlignment: Center); }
+        }
+        Group { Anchor: (Width: 5); }
+        Label #VersionLabel { Text: "v1.0.0"; Style: (FontSize: 10, TextColor: #6e7da1, VerticalAlignment: Center); }
+        Group { Anchor: (Width: 8); }
+        Label #VersionStatus { Text: ""; Style: (FontSize: 10, TextColor: #96a9be, VerticalAlignment: Center); }
+
+        Group { FlexWeight: 1; }
+
+        Label { Text: "Support:"; Style: (FontSize: 11, TextColor: #6e7da1, VerticalAlignment: Center); }
+        Group { Anchor: (Width: 5); }
+        Button #DiscordButton {
+            Anchor: (Height: 20);
+            Padding: (Horizontal: 4);
+            Style: (
+                Default: (Background: #141c26),
+                Hovered: (Background: #1a2a3a),
+                Pressed: (Background: #0a1018)
+            );
+            Label { Text: "Discord"; Style: (FontSize: 11, TextColor: #5865F2, VerticalAlignment: Center); }
+        }
+    }
+}
